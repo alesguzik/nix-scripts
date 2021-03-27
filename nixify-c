@@ -1,0 +1,33 @@
+#!/bin/sh
+
+if [ ! -e default.nix ]; then
+  cat > default.nix <<'EOF'
+with import <nixpkgs> {};
+stdenv.mkDerivation {
+  name = "env";
+  buildInputs = [
+    bashInteractive
+    pkgconfig
+    meson ninja
+  ];
+}
+EOF
+  ${EDITOR:-vim} default.nix +7
+fi
+
+if [ ! -e .envrc ]; then
+  cat > .envrc <<'EOF'
+use nix
+export LD_LIBRARY_PATH="$(ld-library-path-from-nix)"
+EOF
+  direnv allow
+fi
+
+if [ ! -e meson.build ]; then
+  cat > meson.build <<'EOF'
+project('app','c')
+src = 'main.c'
+executable('app', src, dependencies : dependency('gtk+-3.0'))
+EOF
+fi
+

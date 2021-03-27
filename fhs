@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+fhs="$(dirname "$(realpath "$0")")/fhs.nix"
+
+function run {
+  nix-shell --argstr run "$*" "${fhs}"
+}
+
+if [[ $# -eq 0 ]]; then
+  run bash
+else
+  run "$@"
+fi

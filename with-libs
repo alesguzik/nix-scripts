@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+note = ENV['PS1_NOTE']
+joined_libs = ARGV.join(' ')
+ENV['MY_SHELL'] ||= ENV['SHELL']
+ENV['PS1_NOTE'] = note ? "#{note} > #{joined_libs}" : joined_libs
+cmd = %(export LD_LIBRARY_PATH="$(echo $NIX_LDFLAGS|sed 's|-rpath [^ ]* ||g; s| -L|\\n|g'|sed '/^$/d'|paste -sd ':' -)"; #{ENV['MY_SHELL']})
+system 'nix-shell', '--command', cmd, '-p', 'pkgconfig', *ARGV

@@ -1,0 +1,2 @@
+#!/bin/sh
+exec "$(nix-build -A glibc '<nixpkgs>' --no-out-link)/lib/ld-linux-x86-64.so.2" "$@"

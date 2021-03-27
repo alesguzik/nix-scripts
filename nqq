@@ -1,0 +1,4 @@
+#!/bin/sh
+cache=/tmp/nix-options-man.txt
+MANWIDTH=87 man configuration.nix 2>/dev/null|col -b > $cache
+cat $cache|cat -n|fzf --with-nth 2.. --preview "tail +{1} '$cache'" --preview-window='60%'

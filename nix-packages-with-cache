@@ -1,0 +1,24 @@
+#!/bin/sh
+
+cd /etc/nixos/nixpkgs
+set -e
+
+function list_packages {
+  nix-env -f "<nixpkgs>" -qaP
+}
+
+function nixpkgs_is_clean {
+  return 0
+  [ "$(git status --porcelain|wc -l)" == "0" ]
+}
+
+if nixpkgs_is_clean ; then
+  cache_file="/var/cache/nix-packages-cache/$(git rev-parse HEAD).txt"
+  if [ ! -f "$cache_file" ]; then
+    list_packages > "${cache_file}.incomplete"
+    mv "$cache_file.incomplete" "$cache_file"
+  fi
+  cat "$cache_file"
+else
+  list_packages
+fi

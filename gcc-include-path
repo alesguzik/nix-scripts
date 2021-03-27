@@ -1,0 +1,2 @@
+#!/bin/sh
+gcc -xc -E -v - < /dev/null 2>&1|awk '/include <...> search starts here:/{a=1; next} /End of search list./{a=0} a'|ruby -e 'puts STDIN.readlines.map{|x| x.chomp.strip}.join(":")'

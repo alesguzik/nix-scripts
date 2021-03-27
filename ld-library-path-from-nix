@@ -1,0 +1,2 @@
+#!/bin/sh
+echo "$NIX_LDFLAGS"|sed 's|-rpath [^ ]* ||g; s| -L|\n|g'|sed '/^$/d'|paste -sd ':' -

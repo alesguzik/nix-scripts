@@ -1,0 +1,2 @@
+#!/bin/sh
+nix-shell -p $(q "$@"|cut -d' ' -f 1|tee /dev/stderr)

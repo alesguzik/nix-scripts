@@ -1,0 +1,27 @@
+#!/bin/sh
+
+if [ ! -e shell.nix ]; then
+  cat > shell.nix <<'EOF'
+with import <nixpkgs> {};
+stdenv.mkDerivation rec {
+  name = "env";
+  buildInputs = [
+    bashInteractive
+    pkgconfig
+  ];
+  # LD_LIBRARY_PATH = stdenv.lib.makeLibraryPath [
+  #   pkgconfig
+  # ];
+}
+EOF
+  ${EDITOR:-vim} shell.nix +6
+fi
+
+if [ ! -e ./.envrc ]; then
+  cat <<'EOD' >.envrc
+use nix
+export LD_LIBRARY_PATH="$(echo "$NIX_LDFLAGS"|sed 's|-rpath [^ ]* ||g; s| -L|\n|g'|sed '/^$/d'|paste -sd ':' -)"
+export INCLUDE_PATH="$(gcc -xc -E -v - < /dev/null 2>&1|awk '/include <...> search starts here:/{a=1; next} /End of search list./{a=0} a'|ruby -e 'puts STDIN.readlines.map{|x| x.chomp.strip}.join(":")')"
+EOD
+  direnv allow
+fi

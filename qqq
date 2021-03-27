@@ -1,0 +1,2 @@
+#!/bin/sh
+exec find /nix/store -name "$1"

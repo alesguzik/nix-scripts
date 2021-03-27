@@ -1,0 +1,51 @@
+#!/bin/sh
+set -e
+
+cd /etc/nixos
+
+for arg in "$@"; do
+  case "$arg" in
+    "-u") DO_UPDATE=true ;;
+    "-e") DO_EDIT=true ;;
+    "-t") DO_TRACE=true ;;
+  esac
+done
+
+ensure_branch () {
+  repo="$1"
+  branch="$2"
+  pushd $repo >/dev/null
+  if [ "$(git rev-parse --abbrev-ref HEAD)" != "$branch" ]; then
+    echo "$repo is not on master"
+    exit 255
+  fi
+  popd >/dev/null
+}
+
+update_repo () {
+  echo "Updating $1"
+  pushd $1 >/dev/null
+  git fetch --all --verbose
+  echo
+  git merge --ff-only
+  echo
+  popd > /dev/null
+}
+
+#ensure_branch nixpkgs master
+[ "$DO_EDIT" ] && $EDITOR configuration.nix
+
+if [ "$DO_UPDATE" ]; then
+  update_repo nixpkgs
+
+  for repo in {modules,overlays,repos}/*; do
+    # ensure_branch "$repo" master
+    update_repo "$repo"
+  done
+fi
+
+extra_args=''
+if [ -z "$DO_TRACE" ]; then
+  extra_args='--show-trace'
+fi
+exec sudo nixos-rebuild switch $extra_args
