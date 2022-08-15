@@ -1,2 +1,2 @@
 #!/bin/sh
-exec nix why-depends --include nixpkgs=/etc/nixos/nixpkgs/ /run/current-system "$@"
+exec nix why-depends -a --include nixpkgs=/etc/nixos/nixpkgs/ /run/current-system "$@"

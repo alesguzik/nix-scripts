@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 set -e
 
 cd /etc/nixos
@@ -8,6 +8,8 @@ for arg in "$@"; do
     "-u") DO_UPDATE=true ;;
     "-e") DO_EDIT=true ;;
     "-t") DO_TRACE=true ;;
+    "-s") DO_SINGLE_JOB=true ;;
+    "-k") DO_KEEP_GOING=true ;;
   esac
 done
 
@@ -45,7 +47,14 @@ if [ "$DO_UPDATE" ]; then
 fi
 
 extra_args=''
-if [ -z "$DO_TRACE" ]; then
-  extra_args='--show-trace'
+if [ -n "$DO_TRACE" ]; then
+  extra_args=' --show-trace'
 fi
+if [ -n "$DO_KEEP_GOING" ]; then
+  extra_args=' --keep-going'
+fi
+if [ -n "$DO_SINGLE_JOB" ]; then
+  extra_args=' -j 1'
+fi
+echo nixos-rebuild switch $extra_args
 exec sudo nixos-rebuild switch $extra_args

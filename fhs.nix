@@ -8,6 +8,9 @@ with pkgs; (buildFHSUserEnv {
   targetPkgs = pkgs: (with pkgs; [
     nodejs
     zlib
+    alsa-lib
+    freetype
+    xorg.libX11
   ]);
   runScript = "${run}";
 }).env
